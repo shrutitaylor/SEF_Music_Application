@@ -53,6 +53,11 @@ public class Artist {
 			System.out.println("Wrong Artist ID");
 			return false;
 		}else
+			if(!checkAddress(Address)){
+				// to check if the Adress is in the format CITY|STATE|COUNTRY
+				return false;
+				
+		}else
 			if(!checkBirthdate(Birthdate)){
 				// to check if the Birthdate is in the correct format DD-MM-YYYY
 				return false;
@@ -102,25 +107,37 @@ public class Artist {
 	}
 	
 	public boolean checkBirthdate(String birthdate) {
-		//to check Date Format
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	    
-		// to check if the Birthdate is in the correct format DD-MM-YYYY
-		try {
-            Date date = dateFormat.parse(Birthdate);
-            System.out.println("Valid Date Format: " + dateFormat.format(date));
-            return true;
-        } catch (ParseException e) {
-            System.out.println("Invalid Date Format");
-            return false;
-        }
-	}
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		 try {
+		        Date date = dateFormat.parse(birthdate);
+		        String formattedDate = dateFormat.format(date);
+
+		        // Check if the parsed and formatted date matches the input
+		        if (!formattedDate.equals(birthdate)) {
+		            System.out.println("Date does not match the specified format.");
+		            return false;
+		        }
+
+		        System.out.println("Valid Date Format: " + formattedDate);
+		        return true;
+		    } catch (ParseException e) {
+		        System.out.println("Invalid Date Format");
+		        return false;
+		    }
+		}
 	
 	public boolean checkValidAwards(ArrayList<String> awards) {
 		
 		//tocheck year format
 	    String yearPattern = "\\d{4}";
 	    String[] parts = null ;
+	    
+	    if(awards.isEmpty()) {
+	    	System.out.println("Valid award");
+	    	// zero awards
+	    	return true;
+	    }
 	    
 	    try {
 		for (String award : awards) {
@@ -129,18 +146,49 @@ public class Artist {
 
 			if (parts.length != 2) {
             // Invalid format if not split into two parts
-            return false;}
+				System.out.println("Invalid award");
+                return false;
+            }
         
-		String year = parts[0];
-        String title = parts[1];
+			String year = parts[0];
+	        String title = parts[1];
         
         //validate year and title
         if (!year.matches(yearPattern) || countWords(title)<4 || countWords(title)>10) {
+        	System.out.println("Invalid award");
             return false;
         }
 	    }catch(Exception e) {
+	    	System.out.println("Invalid award");
 	    	return false;
 	    }
+	    System.out.println("VALID award");
         return true;
 	}
+	
+	public boolean checkAddress(String address) {
+		
+	    // Split the address into its components using the '|' character as a delimiter
+	    String[] addressComponents = address.split("\\|");
+
+	    // Check if there are exactly three components (City, State, and Country)
+	    if (addressComponents.length != 3) {
+	        System.out.println("Invalid Address Format");
+	        return false;
+	    }else {
+
+	    // Check if each component is not empty (contains at least one character)
+	    for (String component : addressComponents) {
+	        if (component.trim().isEmpty()) {
+	            System.out.println("Invalid Address Format");
+	            return false;
+	        }
+	    }
+
+	    // If all checks pass, the address format is valid
+	    System.out.println("Valid Address Format: " + address);
+	    return true;
+	    }
+	}
+
 }
