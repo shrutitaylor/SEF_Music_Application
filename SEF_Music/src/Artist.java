@@ -1,4 +1,9 @@
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,8 +27,7 @@ public class Artist {
 	Pattern pattern = Pattern.compile(regex);
     Matcher matcher ; 
     
-    
-    
+    public Artist() {}   
     
 	
 	public Artist(String id, String name, String address, String birthdate, String bio, ArrayList<String> occupations, ArrayList<String> genres, ArrayList<String> awards){
@@ -40,66 +44,54 @@ public class Artist {
 			
 	public boolean addArtist()
 	{
-		/* TODO: Add the information of a new artist to a TXT file */
-		// If the artist information meets the defined conditions
-		// the information should be added to the TXT file and the function should return true.
-		// If the artist information does not meet the conditions,
-		// the information should not be added to the TXT file and the function should return false.
-		// Check Artist ID : 
-		matcher = pattern.matcher(ID);
-		//if(ID.length()!=10 ) {
-			if(!matcher.matches() ) {
-			// if length of artist ID != 10 and does not match the given pattern
-			System.out.println("Wrong Artist ID");
+		if(validityCheck()) {
+			// add it to file if all the conditions are satisfied
+			//if everything is valid we will add artist data to file
+			addToFile(new Artist (this.getID(),this.getName(),this.getAddress(),this.getBirthdate(),this.getBio(),this.getOccupations(),this.getGenres(),this.getAwards()));
+			return true;
+		}else {
 			return false;
-		}else
-			if(!checkAddress(Address)){
-				// to check if the Adress is in the format CITY|STATE|COUNTRY
-				return false;
-				
-		}else
-			if(!checkBirthdate(Birthdate)){
-				// to check if the Birthdate is in the correct format DD-MM-YYYY
-				return false;
-				
-		}else 
-			if(countWords(Bio)<10 || countWords(Bio)>30) {
-				//The bio NOT between 10 to 30 words. 
-				 System.out.println("Bio should be between 10 to 30 words");
-		          return false;
-		}else
-			if(Occupations.size()<1 || Occupations.size()>5){
-				//An artist should have at least one occupation or a maximum of five occupations.
-				System.out.println("least one occupation or a maximum of five occupations");
-	            return false;
-		}else
-			if(Awards.size()<0 || Awards.size()>3 ){
-			//An artist can have zero to a maximum of three awards. 
-		}else
-			if(!checkValidAwards(Awards)) {
-				return false;
-	            
-			}else
-				if(Genres.size()<2 || Genres.size()>5){
-					//An artist should have at least two music genres and a maximum of five genres
-					System.out.println("at least two music genres and a maximum of five genres");
-		            return false;
-			}else {
-				return true;
-			}
-		return false;
+		}
 	
 	}
 
-//	public boolean updateArtist()
-//	{
-//	/* TODO: Update the information of a given artist in a TXT file */
-//	// If the artist's new information meets the defined conditions,
-//	// the artist information should be updated in the TXT file and the function should return true.
-//	// If the artist's new information does not meet the following conditions,
-//	// the artist information should not be updated in the TXT file and the function should return false. return true;
-//	return true;
-//	}
+	public boolean updateArtist()
+	{
+	  
+		int valid = 0;
+		if(validityCheck()) { valid+=1; }
+			
+		//check Birthdate
+		if(checkAge(this.getBirthdate())) { valid+=1 ; }
+		
+		//check valid Awards year
+		if(checkAwardsYear(Awards)) {	valid+=1; }
+		
+		if(valid == 3) {
+			//if all three are valid
+			updateFile(new Artist (this.getID(),this.getName(),this.getAddress(),this.getBirthdate(),this.getBio(),this.getOccupations(),this.getGenres(),this.getAwards()), this.getID());
+			return true;
+		}
+		return false;
+	}
+	private boolean checkAwardsYear(ArrayList<String> awards) {
+		
+		int count =0;
+		for(String a : awards) {
+			int year = Integer.parseInt(a.split(",")[0]);
+			
+			if(year >= 2000) {
+				count+=1;
+			}
+		}
+		if(count == awards.size()) {
+			//All awards can be changed
+			return true;
+		}
+		return false;
+	}
+
+
 	public int countWords (String bio)
 	{
 	StringTokenizer stringTokenizer1 = new StringTokenizer(bio);
@@ -190,5 +182,210 @@ public class Artist {
 	    return true;
 	    }
 	}
+	
+	public boolean checkAge(String Birthdate) {
+		
+		//Assuming this is a valid birthdate
+		String[] date = Birthdate.split("-");
+		int year = Integer.parseInt(date[2]);
+		
+		if(year < 2000) {
+			//Born before 2000
+			System.out.println("Born before 2000, occupation cannot be changed");
+			return false;
+		}
+		System.out.println("Born after 2000");
+		return true;
+		
+	}
 
+	public boolean addToFile(Artist artist) {
+		String filePath = "artist_info.txt";
+
+        // Write the artist information to the text file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            writer.write( artist.getID()+", " + artist.getName()+", " + artist.getAddress()
+            +", " + artist.getBirthdate()+", " + artist.getBio()+", " + artist.getOccupations().toString()
+            +", " + artist.getGenres().toString()+", " + artist.getAwards().toString());
+            writer.newLine();
+           
+            return true;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+	}
+	public boolean updateFile(Artist artist, String artistId) {
+		// Define the file path
+        String filePath = "artist_info.txt";
+
+        // Read the existing artist information from the file
+        ArrayList<String> artistInfoList = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+            	if(!line.split(",")[0].equals(artistId)) {
+            		 artistInfoList.add(line);
+            		 System.out.println(line.split(",")[0]+"--"+line);
+            	}
+                               
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        //add the updated list
+        	artistInfoList.add(artist.getID()+", " + artist.getName()+", " + artist.getAddress()
+            +", " + artist.getBirthdate()+", " + artist.getBio()+", " + artist.getOccupations().toString()
+            +", " + artist.getGenres().toString()+", " + artist.getAwards().toString());
+        
+        	//Write it to the file
+        	 try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+        		 for (String line : artistInfoList) {
+        			 //System.out.println(line);
+                 writer.write( line);
+                 writer.newLine();
+        		 }
+        		 
+                 return true;
+                 
+             } catch (IOException e) {
+                 e.printStackTrace();
+                 return false;
+             }
+        
+        	 
+	}
+	
+	public boolean validityCheck(){
+		//check all conditions via this method
+		
+		// Check Artist ID : 
+		matcher = pattern.matcher(ID);
+		//if(ID.length()!=10 ) {
+			if(!matcher.matches() ) {
+			// if length of artist ID != 10 and does not match the given pattern
+			System.out.println("Wrong Artist ID");
+			return false;
+		}else
+			if(!checkAddress(Address)){
+				// to check if the Adress is in the format CITY|STATE|COUNTRY
+				return false;
+				
+		}else
+			if(!checkBirthdate(Birthdate)){
+				// to check if the Birthdate is in the correct format DD-MM-YYYY
+				return false;
+				
+		}else 
+			if(countWords(Bio)<10 || countWords(Bio)>30) {
+				//The bio NOT between 10 to 30 words. 
+				 System.out.println("Bio should be between 10 to 30 words");
+		          return false;
+		}else
+			if(Occupations.size()<1 || Occupations.size()>5){
+				//An artist should have at least one occupation or a maximum of five occupations.
+				System.out.println("least one occupation or a maximum of five occupations");
+	            return false;
+		}else
+			if(Awards.size()<0 || Awards.size()>3 ){
+			//An artist can have zero to a maximum of three awards. 
+		}else
+			if(!checkValidAwards(Awards)) {
+				return false;
+	            
+			}else
+				if(Genres.size()<2 || Genres.size()>5){
+					//An artist should have at least two music genres and a maximum of five genres
+					System.out.println("at least two music genres and a maximum of five genres");
+		            return false;
+			}else {
+				return true;
+			}
+		return false;
+	
+	}
+
+
+	public String getID() {
+		return ID;
+	}
+
+
+	public void setID(String iD) {
+		ID = iD;
+	}
+
+
+	public String getName() {
+		return Name;
+	}
+
+
+	public void setName(String name) {
+		Name = name;
+	}
+
+
+	public String getAddress() {
+		return Address;
+	}
+
+
+	public void setAddress(String address) {
+		Address = address;
+	}
+
+
+	public String getBirthdate() {
+		return Birthdate;
+	}
+
+
+	public void setBirthdate(String birthdate) {
+		Birthdate = birthdate;
+	}
+
+
+	public String getBio() {
+		return Bio;
+	}
+
+
+	public void setBio(String bio) {
+		Bio = bio;
+	}
+
+
+	public ArrayList<String> getOccupations() {
+		return Occupations;
+	}
+
+
+	public void setOccupations(ArrayList<String> occupations) {
+		Occupations = occupations;
+	}
+
+
+	public ArrayList<String> getGenres() {
+		return Genres;
+	}
+
+
+	public void setGenres(ArrayList<String> genres) {
+		Genres = genres;
+	}
+
+
+	public ArrayList<String> getAwards() {
+		return Awards;
+	}
+
+
+	public void setAwards(ArrayList<String> awards) {
+		Awards = awards;
+	}
 }
