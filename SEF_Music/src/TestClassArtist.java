@@ -161,18 +161,16 @@ public class TestClassArtist {
 		validAwards.clear();
         validAwards.add("2023, Top Artist of the month");
         
-      //Test Case 9_Test Data 1 - BIRTHDATE BEFORE 2000
-        Artist artist = new Artist("569SSDDF*&", "Taylor Swift", "Melbourne|Victoria|Australia", "13-12-1989", "Taylor Alison Swift is an American singer-songwriter. Her cat is Olivia.",
-                new ArrayList<>(Arrays.asList("Scriptwriter","Producer")), new ArrayList<>(Arrays.asList("Country","Pop")), validAwards);
-        assertFalse(artist.updateArtist());
+      //Test Case 10_Test Data 1 - BIRTHDATE AFTER 2000
+        Artist artist = new Artist("123ABCDE*&", "Taylor Swift New", "Melbourne|Victoria|Australia", "13-12-2004", "This is a valid bio with more than 10 words. Adding three more words.",
+                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter")), new ArrayList<>(Arrays.asList("Country","Pop")), validAwards);
+        assertTrue(artist.updateArtist());
         
         
-        validAwards.clear();
-        validAwards.add("1989, Top Artist of the month");
-      //Test Case 5_Test Data 2 - AWARDS YEAR BEFORE 2000
-        Artist artist1 = new Artist("123ASDWQ:?", "Jane Smith", "Brisbane|Queensland|Australia", "13-12-2000","This is a valid bio with more than 10 words.",
-                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter","Playwriter")), new ArrayList<>(Arrays.asList("Pop","Rock")),validAwards);
-        assertFalse(artist1.updateArtist());
+      //Test Case 10_Test Data 2 - AWARDS YEAR AFTER 2000
+        Artist artist1 = new Artist("615TDBHJ#$", "Harry Styles New ", "Brisbane|Queensland|Australia", "05-10-2000", "This is a valid bio with more than 10 words. Adding four or more words.",
+                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter","ScreenWriter")), new ArrayList<>(Arrays.asList("Country","Pop","Rock")), validAwards);
+        assertTrue(artist1.updateArtist());
     }
 	
 	@Test
@@ -181,16 +179,20 @@ public class TestClassArtist {
 		validAwards.clear();
         validAwards.add("2023, Top Artist of the month");
         
-      //Test Case 10_Test Data 1 - BIRTHDATE BEFORE 2000
-        Artist artist = new Artist("123ABCDE*&", "Taylor Swift New", "Melbourne|Victoria|Australia", "13-12-2004", "This is a valid bio with more than 10 words. Adding three more words.",
-                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter")), new ArrayList<>(Arrays.asList("Country","Pop")), validAwards);
-        assertTrue(artist.updateArtist());
+      //Test Case 11_Test Data 1 - BIRTHDATE BEFORE 2000
+        Artist artist = new Artist("569SSDDF*&", "Taylor Swift", "Melbourne|Victoria|Australia", "13-12-1989", "Taylor Alison Swift is an American singer-songwriter. Her cat is Olivia.",
+                new ArrayList<>(Arrays.asList("Scriptwriter","Producer")), new ArrayList<>(Arrays.asList("Country","Pop")), validAwards);
+        assertFalse(artist.updateArtist());
         
         
-      //Test Case 10_Test Data 2 - AWARDS YEAR BEFORE 2000
-        Artist artist1 = new Artist("615TDBHJ#$", "Harry Styles New ", "Brisbane|Queensland|Australia", "05-10-2000", "This is a valid bio with more than 10 words. Adding four or more words.",
-                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter","ScreenWriter")), new ArrayList<>(Arrays.asList("Country","Pop","Rock")), validAwards);
-        assertTrue(artist1.updateArtist());
+        validAwards.clear();
+        validAwards.add("1989, Top Artist of the month");
+      //Test Case 11_Test Data 2 - AWARDS YEAR BEFORE 2000
+        Artist artist1 = new Artist("123ASDWQ:?", "Jane Smith", "Brisbane|Queensland|Australia", "13-12-2000","This is a valid bio with more than 10 words.",
+                new ArrayList<>(Arrays.asList("Singer","Director", "Songwriter","Playwriter")), new ArrayList<>(Arrays.asList("Pop","Rock")),validAwards);
+        assertFalse(artist1.updateArtist());
     }
+	
+	
 
 }
